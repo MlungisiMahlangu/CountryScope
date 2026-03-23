@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Explorer</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- Doing background-->
+    <div id="bg-image"></div>
+    <div id="bg-overlay"></div>
+
+    <!-- Animated earth shown on default/empty state -->
+    <div class="earth-scene" id="earth-scene">
+        <div class="stars-layer" id="stars-layer"></div>
+        <div class="earth-wrapper">
+            <div class="orbit-ring">
+                <div class="orbit-dot"></div>
+            </div>
+            <div class="earth">
+                <div class="earth-surface">
+                    <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                    <rect width="400" height="200" fill="#1565a8"/>
+                    <path d="M60,30 L75,25 L85,35 L90,55 L80,75 L70,85 L65,70 L55,60 Z" fill="#2d7a3a"/>
+                    <path d="M65,95 L78,90 L86,105 L82,128 L70,142 L57,137 L51,118 L54,104 Z" fill="#2d7a3a"/>
+                    <path d="M150,22 L163,19 L172,33 L167,55 L156,61 L144,51 L142,34 Z" fill="#2d7a3a"/>
+                    <path d="M147,67 L163,64 L173,82 L169,108 L158,123 L144,117 L139,96 L141,76 Z" fill="#3a8a45"/>
+                    <path d="M190,18 L238,16 L254,30 L248,57 L226,67 L203,62 L188,46 Z" fill="#2d7a3a"/>
+                    <path d="M224,67 L250,62 L265,78 L258,99 L239,105 L223,94 Z" fill="#3a8a45"/>
+                    <path d="M96,8 L112,6 L118,19 L110,28 L95,25 Z" fill="#4a9a55" opacity="0.7"/>
+                    <path d="M268,115 L292,113 L300,132 L292,151 L272,154 L260,138 Z" fill="#3a8a45"/>
+                    <ellipse cx="118" cy="48" rx="24" ry="9" fill="rgba(255,255,255,0.18)"/>
+                    <ellipse cx="210" cy="90" rx="20" ry="7" fill="rgba(255,255,255,0.15)"/>
+                    <ellipse cx="78" cy="138" rx="17" ry="6" fill="rgba(255,255,255,0.13)"/>
+                    <ellipse cx="318" cy="60" rx="22" ry="8" fill="rgba(255,255,255,0.16)"/>
+                    <path d="M460,30 L475,25 L485,35 L490,55 L480,75 L470,85 L465,70 L455,60 Z" fill="#2d7a3a"/>
+                    <path d="M465,95 L478,90 L486,105 L482,128 L470,142 L457,137 L451,118 L454,104 Z" fill="#2d7a3a"/>
+                    <path d="M550,22 L563,19 L572,33 L567,55 L556,61 L544,51 L542,34 Z" fill="#2d7a3a"/>
+                    <path d="M547,67 L563,64 L573,82 L569,108 L558,123 L544,117 L539,96 L541,76 Z" fill="#3a8a45"/>
+                    <path d="M590,18 L638,16 L654,30 L648,57 L626,67 L603,62 L588,46 Z" fill="#2d7a3a"/>
+                    <ellipse cx="518" cy="48" rx="24" ry="9" fill="rgba(255,255,255,0.18)"/>
+                    <ellipse cx="610" cy="90" rx="20" ry="7" fill="rgba(255,255,255,0.15)"/>
+                    <ellipse cx="718" cy="60" rx="22" ry="8" fill="rgba(255,255,255,0.16)"/>
+                </svg>
+                </div>
+                <div class="earth-atmosphere"></div>
+                <div class="earth-shine"></div>
+            </div>
+        </div>
+        <p class="earth-hint">Explore and see the World!!</p>
+    </div>
+
+    <div id="landmark-label"></div>
+
+    <header>
+        <h1>Country Explorer</h1>
+    </header>
+
+    <main>
+        <div class="search-container">
+            <input type="text" id="country-input" placeholder="Enter country name...">
+            <button id="search-btn">Search</button>
+        </div>
+
+        <div id="loading-spinner" class="spinner hidden"></div>
+
+        <section id="country-info" class="country-card hidden"></section>
+
+        <section id="bordering-countries" class="border-grid hidden"></section>
+
+        <div id="error-message" class="error hidden"></div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

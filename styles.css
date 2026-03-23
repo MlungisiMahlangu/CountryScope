@@ -1,0 +1,394 @@
+body {
+    font-family: 'DM Sans', sans-serif;
+    text-align: center;
+    background: color #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    color: #fff;
+}
+
+.search-container {
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#bg-image {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background-color: #0a0a1a;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 1s ease-in-out;
+}
+
+#bg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient( to bottom, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.35) 50%, rgba(0, 0, 0, 0.65) 100%);
+    transition: opacity 0.8s ease;
+}
+
+#landmark-label {
+    position: fixed;
+    bottom: 20px;
+    left: 24px;
+    z-index: 10;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75em;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none
+}
+
+#landmark-label.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+header {
+    margin-bottom: 30px;
+    padding-top: 20px;
+}
+
+header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+    color: #fff;
+}
+
+.subtitle {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+}
+
+input {
+    padding: 12px 8px;
+    width: 260px;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Dm Sans', sans-serif;
+    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    outline: none;
+    transition: background 0.3s, border 0.3s;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+button#search-btn {
+    padding: 12px 26px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #222;
+    border: none;
+    border-radius: 30px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+
+button#search-btn:hover {
+    background: #fff;
+    transform: scale(1.04);
+}
+
+.country-card {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 28px 24px;
+    margin: 20px auto;
+    width: 320px;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+    color: #fff;
+    animation: fadeSlideUp 0.5s ease forwards;
+}
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.country-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    margin-bottom: 14px;
+}
+
+.country-card p {
+    margin: 6px 0;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.country-card img {
+    margin-top: 14px;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+input:focus {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.known-for-badge {
+    display: inline-block;
+    margin-top: 14px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.border-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin: 20px auto;
+}
+
+.border-grid div {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 12px 10px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.85rem;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.border-grid div:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.border-grid div p {
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.border-grid div img {
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+    margin: 20px;
+    font-size: 1rem;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.spinner {
+    margin: 28px auto;
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-top: 5px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.earth-scene {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+    padding-top: 180px;
+}
+
+.earth-scene.hidden {
+    opacity: 0;
+}
+
+.stars-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--d) ease-in-out infinite;
+}
+
+@keyframes twinkle {
+    0%,
+    100% {
+        opacity: var(--min);
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.earth-wrapper {
+    position: relative;
+    width: 200px;
+    height: 200px;
+}
+
+.earth {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset -24px -12px 48px rgba(0, 0, 0, 0.55), inset 10px 10px 24px rgba(255, 255, 255, 0.07), 0 0 80px rgba(32, 120, 200, 0.35), 0 0 160px rgba(32, 120, 200, 0.12);
+    animation: earthGlow 4s ease-in-out infinite;
+}
+
+@keyframes earthGlow {
+    0%,
+    100% {
+        box-shadow: inset -24px -12px 48px rgba(0, 0, 0, 0.55), inset 10px 10px 24px rgba(255, 255, 255, 0.07), 0 0 80px rgba(32, 120, 200, 0.35), 0 0 160px rgba(32, 120, 200, 0.12);
+    }
+    50% {
+        box-shadow: inset -24px -12px 48px rgba(0, 0, 0, 0.55), inset 10px 10px 24px rgba(255, 255, 255, 0.07), 0 0 110px rgba(32, 120, 200, 0.55), 0 0 220px rgba(32, 120, 200, 0.22);
+    }
+}
+
+.earth-surface {
+    position: absolute;
+    inset: 0;
+    animation: rotateSurface 14s linear infinite;
+}
+
+@keyframes rotateSurface {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.earth-surface svg {
+    height: 100%;
+    width: 400px;
+}
+
+.earth-atmosphere {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, rgba(120, 200, 255, 0.14) 0%, rgba(60, 150, 255, 0.07) 40%, transparent 70%);
+    pointer-events: none;
+}
+
+.earth-shine {
+    position: absolute;
+    top: 14px;
+    left: 26px;
+    width: 60px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.11);
+    transform: rotate(-25deg);
+    pointer-events: none;
+}
+
+.orbit-ring {
+    position: absolute;
+    inset: -32px;
+    border-radius: 50%;
+    border: 1px solid rgba(100, 180, 255, 0.15);
+    animation: orbitSpin 22s linear infinite;
+    transform: rotateX(70deg);
+}
+
+@keyframes orbitSpin {
+    from {
+        transform: rotateX(70deg) rotate(0deg);
+    }
+    to {
+        transform: rotateX(70deg) rotate(360deg);
+    }
+}
+
+.orbit-dot {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    background: rgba(200, 230, 255, 0.9);
+    border-radius: 50%;
+    top: -3.5px;
+    left: 50%;
+    margin-left: -3.5px;
+    box-shadow: 0 0 10px rgba(150, 210, 255, 0.9);
+}
+
+.earth-hint {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-align: center;
+}

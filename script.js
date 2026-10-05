@@ -1,5 +1,10 @@
 const PEXELS_API_KEY = "2mVsfSZy6UN2ygi0dPccozqOgvrV9NgC2Iy8iPKT6NKWyuXGvzOWwF7H";
 
+// REST Countries v5 API - Get your free API key at https://restcountries.com/sign-up
+// Free tier: 1,000 requests/month
+const RESTCOUNTRIES_API_KEY = "rc_live_e0c0fd6f8e6d45b38addaa140d4f2cb4";
+const RESTCOUNTRIES_BASE_URL = "https://api.restcountries.com/countries/v5";
+
 const input = document.getElementById("country-input");
 const button = document.getElementById("search-btn");
 const spinner = document.getElementById("loading-spinner");
@@ -122,8 +127,15 @@ function getLandmark(countryName) {
 async function setBackground(query, labelText) {
     try {
         const res = await fetch(
-            `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`, { headers: { Authorization: PEXELS_API_KEY } }
+            `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`,
+            { headers: { Authorization: PEXELS_API_KEY } }
         );
+        
+        if (!res.ok) {
+            console.warn("Pexels API error:", res.status);
+            return;
+        }
+        
         const data = await res.json();
 
         if (data.photos && data.photos.length > 0) {
@@ -134,6 +146,9 @@ async function setBackground(query, labelText) {
                 bgImage.style.backgroundImage = `url('${photoUrl}')`;
                 landmarkLabel.textContent = `📍 ${labelText}`;
                 landmarkLabel.classList.add("visible");
+            };
+            img.onerror = () => {
+                console.warn("Failed to load background image");
             };
             img.src = photoUrl;
         }
@@ -152,6 +167,13 @@ function resetBackground() {
 
 // ── Main search function ─────────────────────────────────────
 async function searchCountry(countryName) {
+    // Check if API key is configured
+    if (RESTCOUNTRIES_API_KEY === "YOUR_API_KEY_HERE") {
+        errorMessage.innerHTML = 'Please configure your REST Countries API key.<br><small>Get a free key at <a href="https://restcountries.com/sign-up" target="_blank" style="color:#4da6ff">restcountries.com/sign-up</a></small>';
+        errorMessage.classList.remove("hidden");
+        return;
+    }
+    
     try {
         errorMessage.classList.add("hidden");
         countryInfo.classList.add("hidden");
@@ -160,60 +182,117 @@ async function searchCountry(countryName) {
         spinner.classList.remove("hidden");
         document.getElementById("earth-scene").classList.add("hidden");
 
+        // Fetch country data from v5 API
+        const response = await fetch(
+            `${RESTCOUNTRIES_BASE_URL}/names.common/${encodeURIComponent(countryName)}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${RESTCOUNTRIES_API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            if (response.status === 401) {
+                throw new Error("Invalid API key. Please check your configuration.");
+            } else if (response.status === 404) {
+                throw new Error("Country not found. Please check the spelling.");
+            } else {
+                throw new Error(errorData?.errors?.[0]?.message || "Failed to fetch country data.");
+            }
+        }
 
-        const response = await fetch(`https://restcountries.com/v3.1/name/${countryName}`);
-        if (!response.ok) throw new Error("Country not found. Please check the spelling.");
-
-        const data = await response.json();
-        const country = data[0];
+        const responseData = await response.json();
+        
+        // v5 API wraps data in { data: { objects: [...] } }
+        if (!responseData.data?.objects || responseData.data.objects.length === 0) {
+            throw new Error("Country not found. Please check the spelling.");
+        }
+        
+        const country = responseData.data.objects[0];
 
         // Set landmark background
-        const landmark = getLandmark(country.name.common);
+        const commonName = country.names?.common || country.name?.common || "Unknown";
+        const landmark = getLandmark(commonName);
         if (landmark) {
             setBackground(landmark.query, landmark.label);
         } else {
-            setBackground(`${country.name.common} landmark`, country.name.common);
+            setBackground(`${commonName} landmark`, commonName);
         }
 
+        // Extract data from v5 response format
+        const capital = country.capitals?.[0]?.name || country.capitals?.[0] || "N/A";
+        const population = country.population || 0;
+        const region = country.region || "N/A";
+        const alpha2Code = country.codes?.alpha_2 || country.codes?.alpha2 || "";
+        const flagUrl = alpha2Code ? `https://flagcdn.com/${alpha2Code.toLowerCase()}.svg` : "";
+        
         // Build country card
         const knownForHTML = landmark ?
             `<div class="known-for-badge">📍 Known for: ${landmark.label}</div>` :
             "";
 
         countryInfo.innerHTML = `
-            <h2>${country.name.common}</h2>
-            <p><strong>Capital:</strong> ${country.capital ? country.capital[0] : "N/A"}</p>
-            <p><strong>Population:</strong> ${country.population.toLocaleString()}</p>
-            <p><strong>Region:</strong> ${country.region}</p>
-            <img src="${country.flags.svg}" width="150" alt="Flag of ${country.name.common}">
+            <h2>${commonName}</h2>
+            <p><strong>Capital:</strong> ${capital}</p>
+            <p><strong>Population:</strong> ${population.toLocaleString()}</p>
+            <p><strong>Region:</strong> ${region}</p>
+            ${flagUrl ? `<img src="${flagUrl}" width="150" alt="Flag of ${commonName}">` : ""}
             ${knownForHTML}
         `;
         countryInfo.classList.remove("hidden");
 
         // Bordering countries
-        if (country.borders && country.borders.length > 0) {
-            for (let code of country.borders) {
-                const borderRes = await fetch(`https://restcountries.com/v3.1/alpha/${code}`);
-                const borderData = await borderRes.json();
-                const neighbor = borderData[0];
-                borderSection.innerHTML += `
-                    <div>
-                        <p>${neighbor.name.common}</p>
-                        <img src="${neighbor.flags.svg}" width="80" alt="Flag of ${neighbor.name.common}">
-                    </div>
-                `;
+        const borders = country.borders || [];
+        if (borders.length > 0) {
+            let bordersHTML = '<h3 class="border-title">Neighboring Countries</h3>';
+            
+            for (let code of borders) {
+                try {
+                    const borderRes = await fetch(
+                        `${RESTCOUNTRIES_BASE_URL}/codes.alpha_3/${code}`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${RESTCOUNTRIES_API_KEY}`,
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+                    
+                    if (borderRes.ok) {
+                        const borderResponse = await borderRes.json();
+                        if (borderResponse.data?.objects?.[0]) {
+                            const neighbor = borderResponse.data.objects[0];
+                            const neighborName = neighbor.names?.common || neighbor.name?.common || "Unknown";
+                            const neighborAlpha2 = neighbor.codes?.alpha_2 || neighbor.codes?.alpha2 || "";
+                            const neighborFlag = neighborAlpha2 ? `https://flagcdn.com/${neighborAlpha2.toLowerCase()}.svg` : "";
+                            
+                            bordersHTML += `
+                                <div>
+                                    <p>${neighborName}</p>
+                                    ${neighborFlag ? `<img src="${neighborFlag}" width="80" alt="Flag of ${neighborName}">` : ""}
+                                </div>
+                            `;
+                        }
+                    }
+                } catch (err) {
+                    console.warn(`Failed to fetch border country ${code}:`, err);
+                }
             }
+            
+            borderSection.innerHTML = bordersHTML;
         } else {
-            borderSection.innerHTML = "<p style='color:rgba(255,255,255,0.7)'>No bordering countries</p>";
+            borderSection.innerHTML = '<h3 class="border-title">Neighboring Countries</h3><p style="color:rgba(255,255,255,0.7); grid-column: 1/-1;">Island nation — no land borders</p>';
         }
         borderSection.classList.remove("hidden");
 
     } catch (error) {
-        errorMessage.textContent = error.message;
+        errorMessage.textContent = error.message || "An error occurred. Please try again.";
         errorMessage.classList.remove("hidden");
         resetBackground();
         document.getElementById("earth-scene").classList.remove("hidden");
-
     } finally {
         spinner.classList.add("hidden");
     }
